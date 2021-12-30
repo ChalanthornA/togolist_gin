@@ -3,6 +3,7 @@ package routes
 import (
 	"togolist_gin/controllers/auth"
 	"togolist_gin/middleware"
+	"togolist_gin/controllers/todo"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,10 +13,14 @@ func Route(r *gin.Engine){
 	{
 		auth.POST("/signup", authcontroller.Signup)
 		auth.POST("/signin", authcontroller.Signin)
+		auth.GET("/info", middleware.AuthorizeJWT(), authcontroller.UserInfo)
 	}
-	user := r.Group("/user")
-	user.Use(middleware.AuthorizeJWT())
+	todo := r.Group("/todo")
+	todo.Use(middleware.AuthorizeJWT())
 	{
-		user.GET("/getuser", authcontroller.Test)
+		todo.POST("/create", todocontroller.InputTodo)
+		todo.GET("/usertodo", todocontroller.UserTodo)
+		todo.DELETE("/deletetodo/:id", todocontroller.DeleteTodo)
+		todo.PATCH("/updatetodo", todocontroller.UpdateTodo) //ยังไม่เทสนะ
 	}
 }

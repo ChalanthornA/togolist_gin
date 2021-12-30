@@ -51,11 +51,16 @@ func Signin(c *gin.Context){
 	}
 }
 
-func Test(c *gin.Context){
+func UserInfo(c *gin.Context){
 	user_id, _ := c.Get("user_id")
-	username, _ := c.Get("username")
+	
+	user, err := authservice.UserInfo(user_id.(float64))
+	if err != nil{
+		c.Status(http.StatusUnauthorized)
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"id": user_id,
-		"username": username,
+		"id": user.ID,
+		"name": user.Name,
+		"username": user.Username,
 	})
 }
