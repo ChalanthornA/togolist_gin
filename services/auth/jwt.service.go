@@ -6,10 +6,7 @@ import (
 	"togolist_gin/config"
 	"togolist_gin/models"
 
-	"strings"
-
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
 )
 
 var SECRET string = config.LoadENV("SECRET")
@@ -21,18 +18,6 @@ func GenerateToken(user models.UserModel) (string, error) {
 	claims["exp"] = time.Now().Add(time.Hour).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(SECRET))
-}
-
-func ExtractToken(c *gin.Context) string {
-	token := c.Query("token")
-	if token != "" {
-		return token
-	}
-	bearerToken := c.Request.Header.Get("Authorization")
-	if len(strings.Split(bearerToken, " ")) == 2 {
-		return strings.Split(bearerToken, " ")[1]
-	}
-	return ""
 }
 
 func ValidateToken(encodedToken string) (*jwt.Token, error) {
