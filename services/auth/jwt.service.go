@@ -3,12 +3,16 @@ package authservice
 import (
 	"fmt"
 	"time"
+	"togolist_gin/config"
 	"togolist_gin/models"
+
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
+
+var SECRET string = config.LoadENV("SECRET")
 
 func GenerateToken(user models.UserModel) (string, error) {
 	claims := jwt.MapClaims{}
@@ -16,7 +20,7 @@ func GenerateToken(user models.UserModel) (string, error) {
 	claims["username"] = user.Username
 	claims["exp"] = time.Now().Add(time.Hour).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte("Secret"))
+	return token.SignedString([]byte(SECRET))
 }
 
 func ExtractToken(c *gin.Context) string {
@@ -36,7 +40,7 @@ func ValidateToken(encodedToken string) (*jwt.Token, error) {
 		if _, isvalid := token.Method.(*jwt.SigningMethodHMAC); !isvalid {
 			return nil, fmt.Errorf("invalid token")
 		}
-		return []byte("Secret"), nil
+		return []byte(SECRET), nil
 	})
 
 }

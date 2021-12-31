@@ -42,7 +42,7 @@ func UpdateUserTodo(updateTodo models.TodoModel, user_id int)(string, error){
 		return "Cannot find Todo by id.", err
 	}
 	if targetTodo.UserRefer != user_id{
-		return "User id invalid.", fmt.Errorf("user id invalid")
+		return "Cannot update other user todo.", fmt.Errorf("cannot update other user todo")
 	}
 	if updateTodo.Todo != "" && updateTodo.Description != "" {
 		if err := db.Model(&models.TodoModel{}).Where("id = ?", updateTodo.ID).Updates(models.TodoModel{Todo: updateTodo.Todo, Description: updateTodo.Description}).Error; err != nil{
